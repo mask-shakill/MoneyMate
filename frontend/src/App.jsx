@@ -15,7 +15,9 @@ export default function App() {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/transactions");
+        const response = await fetch(
+          "https://money-mate-xi.vercel.app/api/transactions"
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch transactions");
         }
@@ -39,7 +41,7 @@ export default function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/transactions/add",
+        "https://money-mate-xi.vercel.app/api/transactions/add",
         {
           method: "POST",
           headers: {
@@ -69,7 +71,7 @@ export default function App() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/transactions/${transaction._id}`,
+        `https://money-mate-xi.vercel.app/api/transactions/${transaction._id}`,
         {
           method: "PUT",
           headers: {
@@ -98,7 +100,7 @@ export default function App() {
   const deleteTransaction = async (transactionId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/transactions/${transactionId}`,
+        `https://money-mate-xi.vercel.app/api/transactions/${transactionId}`,
         {
           method: "DELETE",
         }

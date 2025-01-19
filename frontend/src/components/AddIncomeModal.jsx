@@ -20,7 +20,7 @@ export default function AddIncomeModal({ onClose, onAddTransaction }) {
     // Send POST request to backend API to create a new transaction
     try {
       const response = await fetch(
-        "http://localhost:5000/api/transactions/add",
+        "https://money-mate-xi.vercel.app/api/transactions/add",
         {
           method: "POST",
           headers: {
