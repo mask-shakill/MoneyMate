@@ -15,6 +15,10 @@ app.use("/api/transactions", transactionRoutes);
 app.get("/", (req, res) => {
   res.send("Hello, MoneyMate!");
 });
+
+app.get("/hello", (req, res) => {
+  res.send("Hello, MoneyMate!");
+});
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
