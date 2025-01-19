@@ -1,9 +1,9 @@
+// App.jsx
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Dashboard from "./components/Dashboard";
 import AddIncomeModal from "./components/AddIncomeModal";
 import TransactionHistory from "./components/TransactionHistory";
-import dummyData from "./data/dummyData.json";
 
 export default function App() {
   const [transactions, setTransactions] = useState([]);
@@ -11,22 +11,110 @@ export default function App() {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
 
+  // Fetch transactions from API when component mounts
   useEffect(() => {
-    setTransactions(dummyData.transactions);
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/transactions");
+        if (!response.ok) {
+          throw new Error("Failed to fetch transactions");
+        }
+        const data = await response.json();
+        setTransactions(data); // Set transactions data from API
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    fetchTransactions();
   }, []);
 
-  const addTransaction = (newTransaction) => {
+  // Add transaction via API
+  const addTransaction = async (newTransaction) => {
     const now = new Date();
-    setTransactions([
-      ...transactions,
-      {
-        ...newTransaction,
-        id: Date.now(),
-        date: now.toISOString(), // Store full ISO string for accurate sorting
-      },
-    ]);
+    const transactionWithDate = {
+      ...newTransaction,
+      date: now.toISOString(), // Store full ISO string for accurate sorting
+    };
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/transactions/add",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(transactionWithDate),
+        }
+      );
+
+      if (response.ok) {
+        const newTransactionData = await response.json();
+        setTransactions([...transactions, newTransactionData]); // Update transactions with the new one
+      } else {
+        console.error("Error adding transaction");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
+  // Handle Edit
+  const editTransaction = async (transaction) => {
+    const updatedTransaction = {
+      ...transaction,
+      amount: transaction.amount + 10, // Example update
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/transactions/${transaction._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedTransaction),
+        }
+      );
+
+      if (response.ok) {
+        const updatedData = await response.json();
+        setTransactions((prevTransactions) =>
+          prevTransactions.map((t) =>
+            t._id === updatedData._id ? updatedData : t
+          )
+        );
+      } else {
+        console.error("Error editing transaction");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  // Handle Delete
+  const deleteTransaction = async (transactionId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/transactions/${transactionId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        setTransactions(transactions.filter((t) => t._id !== transactionId)); // Remove from state
+      } else {
+        console.error("Error deleting transaction");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  // Filter transactions based on selected month and year
   const filteredTransactions = transactions.filter((transaction) => {
     const transactionDate = new Date(transaction.date);
     return (
@@ -49,7 +137,11 @@ export default function App() {
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
         />
-        <TransactionHistory transactions={filteredTransactions} />
+        <TransactionHistory
+          transactions={filteredTransactions}
+          onEditTransaction={editTransaction}
+          onDeleteTransaction={deleteTransaction}
+        />
         {isModalOpen && (
           <AddIncomeModal
             onClose={() => setIsModalOpen(false)}

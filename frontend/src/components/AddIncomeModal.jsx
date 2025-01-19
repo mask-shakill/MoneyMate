@@ -5,12 +5,46 @@ export default function AddIncomeModal({ onClose, onAddTransaction }) {
   const [type, setType] = useState("income");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
-  //const [date, setDate] = useState(''); //removed
+  const [successMessage, setSuccessMessage] = useState(""); // State for success message
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onAddTransaction({ type, amount: parseFloat(amount), category });
-    onClose();
+
+    // Prepare data to send to the backend
+    const newTransaction = {
+      type,
+      amount: parseFloat(amount),
+      category,
+    };
+
+    // Send POST request to backend API to create a new transaction
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/transactions/add",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newTransaction),
+        }
+      );
+
+      if (response.ok) {
+        const transaction = await response.json();
+        onAddTransaction(transaction); // Update the transaction list in the parent component
+        setSuccessMessage("Transaction added successfully!"); // Set the success message
+        setTimeout(() => {
+          onClose(); // Close the modal after 2 seconds
+        }, 2000); // You can adjust the time delay as needed
+      } else {
+        console.error("Error creating transaction");
+        setSuccessMessage("Error creating transaction. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setSuccessMessage("Error creating transaction. Please try again.");
+    }
   };
 
   return (
@@ -25,6 +59,9 @@ export default function AddIncomeModal({ onClose, onAddTransaction }) {
             <X className="w-6 h-6" />
           </button>
         </div>
+        {successMessage && (
+          <div className="mb-4 text-green-600 font-bold">{successMessage}</div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block mb-2">Type</label>
@@ -58,7 +95,6 @@ export default function AddIncomeModal({ onClose, onAddTransaction }) {
               required
             />
           </div>
-          {/*Removed Date Input Field*/}
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors"
