@@ -1,0 +1,32 @@
+{
+  "transactions": [
+    {
+      "id": 1,
+      "type": "income",
+      "amount": 2000,
+      "category": "Salary",
+      "date": "2023-05-01"
+    },
+    {
+      "id": 2,
+      "type": "expense",
+      "amount": 500,
+      "category": "Groceries",
+      "date": "2023-05-05"
+    },
+    {
+      "id": 3,
+      "type": "expense",
+      "amount": 100,
+      "category": "Entertainment",
+      "date": "2023-05-10"
+    },
+    {
+      "id": 4,
+      "type": "income",
+      "amount": 300,
+      "category": "Freelance",
+      "date": "2023-05-15"
+    }
+  ]
+}

@@ -5,11 +5,11 @@ export default function AddIncomeModal({ onClose, onAddTransaction }) {
   const [type, setType] = useState("income");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
-  const [date, setDate] = useState("");
+  //const [date, setDate] = useState(''); //removed
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onAddTransaction({ type, amount: parseFloat(amount), category, date });
+    onAddTransaction({ type, amount: parseFloat(amount), category });
     onClose();
   };
 
@@ -58,16 +58,7 @@ export default function AddIncomeModal({ onClose, onAddTransaction }) {
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block mb-2">Date</label>
-            <input
-              type="date"
-              className="w-full border rounded-md px-3 py-2"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
-            />
-          </div>
+          {/*Removed Date Input Field*/}
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors"

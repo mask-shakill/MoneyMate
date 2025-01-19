@@ -16,7 +16,15 @@ export default function App() {
   }, []);
 
   const addTransaction = (newTransaction) => {
-    setTransactions([...transactions, { ...newTransaction, id: Date.now() }]);
+    const now = new Date();
+    setTransactions([
+      ...transactions,
+      {
+        ...newTransaction,
+        id: Date.now(),
+        date: now.toISOString(), // Store full ISO string for accurate sorting
+      },
+    ]);
   };
 
   const filteredTransactions = transactions.filter((transaction) => {
